@@ -1179,6 +1179,33 @@ section {
   fill: none;
 }
 
+.social-links {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.social-links a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background-color: var(--bg-card);
+  border-radius: 50%;
+  color: var(--accent-blue);
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.social-links a:hover {
+  background-color: var(--accent-blue);
+  color: var(--bg-primary);
+}
+
+.social-links a svg {
+  stroke: currentColor;
+}
+
 .contact-item-text h4 {
   font-family: var(--font-body);
   font-size: 0.85rem;
