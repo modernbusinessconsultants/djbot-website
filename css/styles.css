@@ -950,6 +950,17 @@ section {
   transform: scale(1.05);
 }
 
+.gallery-item--video {
+  aspect-ratio: 9 / 16;
+}
+
+.gallery-item--video video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 .gallery-label {
   position: absolute;
   bottom: 0;
@@ -1496,6 +1507,12 @@ section {
   /* Gallery */
   .gallery-grid {
     grid-template-columns: repeat(2, 1fr);
+    grid-auto-flow: dense;
+  }
+
+  .gallery-item--video {
+    aspect-ratio: auto;
+    grid-row: span 2;
   }
 
   /* Booking */
