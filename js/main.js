@@ -142,49 +142,61 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // ============================================
-  // 7. Contact Form Handling
+  // 7. Contact Form Handling (Formspree)
   // ============================================
   const contactForm = document.querySelector('#contact-form');
 
   if (contactForm) {
-    contactForm.addEventListener('submit', (e) => {
+    contactForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      // Basic client-side validation
-      const formData = new FormData(contactForm);
-      const data = Object.fromEntries(formData.entries());
+      const submitBtn = contactForm.querySelector('button[type="submit"]');
+      const originalBtnText = submitBtn ? submitBtn.textContent : '';
 
-      let isValid = true;
-      for (const [key, value] of Object.entries(data)) {
-        if (typeof value === 'string' && value.trim() === '') {
-          isValid = false;
-          break;
-        }
+      // Clear any prior status message
+      const priorStatus = contactForm.parentNode.querySelector('.form-success-message, .form-error-message');
+      if (priorStatus) priorStatus.remove();
+
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sending...';
       }
 
-      if (!isValid) {
-        alert('Please fill in all required fields.');
-        return;
-      }
-
-      // Log form data (real backend connection later)
-      console.log('Form submitted:', data);
-
-      // Show success message
-      const successMsg = document.createElement('div');
-      successMsg.className = 'form-success-message';
-      successMsg.textContent = 'Thanks for reaching out! We\'ll get back to you soon.';
-      contactForm.parentNode.insertBefore(successMsg, contactForm.nextSibling);
-
-      // Auto-remove success message after 3 seconds
-      setTimeout(() => {
-        if (successMsg.parentNode) {
-          successMsg.remove();
+      const showStatus = (className, text, autoHideMs) => {
+        const el = document.createElement('div');
+        el.className = className;
+        el.textContent = text;
+        contactForm.parentNode.insertBefore(el, contactForm.nextSibling);
+        if (autoHideMs) {
+          setTimeout(() => { if (el.parentNode) el.remove(); }, autoHideMs);
         }
-      }, 3000);
+      };
 
-      // Reset form
-      contactForm.reset();
+      try {
+        const response = await fetch(contactForm.action, {
+          method: 'POST',
+          body: new FormData(contactForm),
+          headers: { 'Accept': 'application/json' }
+        });
+
+        if (response.ok) {
+          showStatus('form-success-message', "Thanks for reaching out! We'll get back to you soon.", 5000);
+          contactForm.reset();
+        } else {
+          const result = await response.json().catch(() => ({}));
+          const message = Array.isArray(result.errors) && result.errors.length
+            ? result.errors.map(err => err.message).join(', ')
+            : 'Something went wrong. Please try again or reach us on Instagram.';
+          showStatus('form-error-message', message, 6000);
+        }
+      } catch (err) {
+        showStatus('form-error-message', 'Network error. Please check your connection and try again.', 6000);
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalBtnText;
+        }
+      }
     });
   }
 
