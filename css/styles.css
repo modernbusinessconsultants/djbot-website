@@ -1528,13 +1528,7 @@ section {
 
   /* Gallery */
   .gallery-grid {
-    grid-template-columns: repeat(2, 1fr);
-    grid-auto-flow: dense;
-  }
-
-  .gallery-item--video {
-    aspect-ratio: auto;
-    grid-row: span 2;
+    grid-template-columns: repeat(3, 1fr);
   }
 
   /* Booking */
